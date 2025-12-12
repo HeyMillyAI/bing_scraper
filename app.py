@@ -11,9 +11,18 @@ import os
 import re
 from urllib.parse import quote_plus
 import uuid
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 app = Flask(__name__)
 CORS(app)
+
+# Configuration constants
+PAGE_LOAD_TIMEOUT_MS = 30000  # 30 seconds timeout for page load
+JS_COMPLETION_DELAY_SECONDS = 2  # Additional delay for JavaScript to complete
+MAX_IMAGES_PER_PRODUCT = 5  # Maximum number of images to extract per product
 
 # Simple API key authentication
 API_KEY = os.getenv('INTERNAL_API_KEY', 'milly-internal-2024')
@@ -59,10 +68,10 @@ def search_products():
 
             # Navigate and wait for network to be idle
             print(f"   ⏳ Loading page...")
-            page.goto(url, wait_until="networkidle", timeout=30000)
+            page.goto(url, wait_until="networkidle", timeout=PAGE_LOAD_TIMEOUT_MS)
 
             # Additional wait for JS to complete
-            time.sleep(2)
+            time.sleep(JS_COMPLETION_DELAY_SECONDS)
 
             # Get rendered HTML
             html_content = page.content()
@@ -243,7 +252,7 @@ def extract_from_bing_card(card):
             if all_images:
                 break
 
-    product['images'] = all_images[:5]  # Max 5 images
+    product['images'] = all_images[:MAX_IMAGES_PER_PRODUCT]
 
     # Extract link (from notebook - 6 strategies)
     link = None
