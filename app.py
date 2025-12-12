@@ -261,7 +261,7 @@ def extract_from_bing_card(card):
     link_elem = card.select_one('a.br-oboSnOptLink[href], a.br-offLink[href]')
     if link_elem:
         href = link_elem.get('href', '')
-        if href and not 'bing.com/shop/entitydetails' in href:
+        if href and 'bing.com/shop/entitydetails' not in href:
             link = href
 
     # Strategy 2: Any link with aclick
@@ -269,7 +269,7 @@ def extract_from_bing_card(card):
         link_elem = card.select_one('a[href*="aclick"]')
         if link_elem:
             href = link_elem.get('href', '')
-            if href and not 'bing.com/shop/entitydetails' in href:
+            if href and 'bing.com/shop/entitydetails' not in href:
                 link = href
 
     # Strategy 3: data-url attribute
@@ -282,7 +282,7 @@ def extract_from_bing_card(card):
         link_elem = card.select_one('a[href]')
         if link_elem:
             href = link_elem.get('href', '')
-            if href and href.startswith('http') and not 'bing.com' in href:
+            if href and href.startswith('http') and '://www.bing.com' not in href and '://bing.com' not in href:
                 link = href
 
     product['link'] = link
